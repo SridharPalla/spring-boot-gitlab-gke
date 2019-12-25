@@ -1,0 +1,19 @@
+loadtest:
+  stage: test
+  tags:
+    - dev
+  image: "docker:stable"
+  services:
+    - docker:stable-dind
+  before_script:
+    - source cicd/shared-scripts/script_permissions.sh
+  script:
+    - cicd/load-test/load_test.sh
+  artifacts:
+    when: always
+    paths: [cicd/load-test/load-test-results.json]
+  only:
+    refs:
+      - branches
+  except:
+    - tags

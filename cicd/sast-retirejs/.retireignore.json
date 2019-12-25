@@ -1,0 +1,11 @@
+[
+	{ 
+		"path": "node_modules/scriptjs/vendor/jquery.js",
+		"justification" : "jquery only used for benchmarks in scriptjs"
+	},
+	{ 
+		"component": "YUI",
+		"version" : "2.8.2r1",
+		"justification" : "jquery only used for benchmarks in scriptjs"
+	}
+]

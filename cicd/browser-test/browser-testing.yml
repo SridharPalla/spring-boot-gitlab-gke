@@ -1,0 +1,19 @@
+browser-performance:
+  stage: test
+  image: docker:stable
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  before_script:
+    - source cicd/shared-scripts/script_permissions.sh
+  script:
+    - cicd/browser-test/browser-testing.sh
+  artifacts:
+    when: always
+    paths:
+      - performance.json
+      - sitespeed-results/
+  only:
+    refs:
+      - branches
+    kubernetes: active

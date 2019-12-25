@@ -1,0 +1,16 @@
+build-image:
+  stage: build
+  tags: 
+    - dev
+  image: "docker:19.03.0-dind"
+  services:
+    - docker:stable-dind
+  before_script:
+    - source cicd/shared-scripts/script_permissions.sh
+  script:
+    - cicd/shared-scripts/registry_login.sh
+    - cicd/build-image/build_image.sh
+  only:
+    refs:
+      - branches
+      - tags

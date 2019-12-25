@@ -1,0 +1,16 @@
+sast-retirejs:
+  stage: build
+  image: node:10-alpine
+  tags:
+    - dev
+  before_script:
+    - source cicd/shared-scripts/script_permissions.sh
+  script:
+    - cicd/sast-retirejs/sast-retirejs.sh
+  artifacts:
+    when: always
+    paths: [retirejs-report.json]
+  only:
+    refs: 
+      - branches
+    kubernetes: active
