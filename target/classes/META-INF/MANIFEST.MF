@@ -1,6 +1,10 @@
 Manifest-Version: 1.0
-Build-Jdk-Spec: 11
-Implementation-Title: kommunicera
-Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: SRPA
+Build-Jdk: 11.0.3
+Implementation-Title: hola-docker
+Implementation-Version: 1.0.0-SNAPSHOT
+Implementation-Vendor-Id: com.thepracticaldeveloper
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/hola-docker
 Created-By: Maven Integration for Eclipse
 

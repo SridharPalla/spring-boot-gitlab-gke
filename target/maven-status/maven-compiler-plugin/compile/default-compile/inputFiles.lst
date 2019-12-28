@@ -1,13 +1,2 @@
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\constants\AppConstants.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\controller\CatalogueRetrievalController.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\constants\SwaggerConstants.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\KommuniceraApplication.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\repository\CentrumRepository.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\exception\ResourceNotFoundException.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\model\RetrieveCatalogue.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\model\RetrieveCategory.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\model\ChildItemKey.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\model\Category.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\service\RetrievalService.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\controller\CategoryRetrievalController.java
-C:\Spring\spring-boot-gitlab-gke\src\main\java\com\test\kommunicera\Swagger2Config.java
+C:\Spring\spring-boot-hola-docker-master\src\main\java\com\thepracticaldeveloper\hola\HolaController.java
+C:\Spring\spring-boot-hola-docker-master\src\main\java\com\thepracticaldeveloper\hola\HolaApplication.java
