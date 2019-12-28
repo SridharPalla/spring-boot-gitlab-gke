@@ -1,0 +1,176 @@
+timeout: 1200s
+options:
+  machineType: N1_HIGHCPU_8
+steps:
+  # Copy Maven Settings Encrypted File
+  - name: gcr.io/cloud-builders/gsutil
+    id: Copy mvn settings file from GCS
+    args: ['cp', 'gs://$_KMS_BUCKET_NAME/$_MVN_SETTINGS_ENCRYPTED_FILE', '.']
+  # Decrypt MVN Settings File
+  - name: gcr.io/cloud-builders/gcloud
+    id: Decrypt settings file
+    args: ['kms', 'decrypt', '--ciphertext-file=$_MVN_SETTINGS_ENCRYPTED_FILE', '--plaintext-file=$_MVN_SETTINGS_FILE', '--location=global', '--keyring=$_KEYRING', '--key=$_KEY']
+    # Test
+  - name: gcr.io/ingka-cm-api-dev/jdk-image
+    id: Test
+    args: [
+      './mvnw',
+      '-s',
+      '$_MVN_SETTINGS_FILE',
+      '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn',
+      '-B',
+      'clean'
+    ]
+
+  # Build the Docker image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev:$BRANCH_NAME
+      - -t
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev:latest
+      - -t
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev:$COMMIT_SHA
+      - .
+      - --build-arg
+      - arg_profile=dev
+  # Push image to registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev
+  # Use kubectl to pull and apply the feature image on container cm-api-dev of deployment
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - set
+      - image
+      - deployment
+      - kommunicera-dev
+      - kommunicera-dev=eu.gcr.io/ingka-cm-api-dev/centrum-dev:$COMMIT_SHA
+      - --namespace
+      - kommunicera-dev
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-dev-cluster
+  # Wait until rollout is done for all clusters
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - rollout
+      - status
+      - deployment/kommunicera-dev
+      - --namespace
+      - kommunicera-dev
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-dev-cluster
+    # Set the context for Different GCP Project
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - config
+      - set-context
+      - centrum-stable-cluster
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+  # Use the context for Different GCP Project
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - config
+      - use-context
+      - centrum-stable-cluster
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+  # Set the Project ID for Different GCP Project
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - config
+      - set
+      - project
+      - ingka-cm-api-dev
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+  # Set the credential for Different GCP Project
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - container
+      - clusters
+      - get-credentials
+      - centrum-stable-cluster
+      - --zone=europe-west3-a
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+  # Show the context for Different GCP Project
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - config
+      - current-context
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+    # Build the Docker image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:$BRANCH_NAME
+      - -t
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:latest
+      - -t
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:$COMMIT_SHA
+      - .
+      - --build-arg
+      - arg_profile=stable
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+    # Push image to registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+  # Use kubectl to pull and apply the feature image on container cm-api-stable of deployment
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - set
+      - image
+      - deployment
+      - kommunicera-stable
+      - kommunicera-stable=eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:$COMMIT_SHA
+      - --namespace
+      - kommunicera-stable
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+  # Wait until rollout is done for all clusters
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - rollout
+      - status
+      - deployment/kommunicera-stable
+      - --namespace
+      - kommunicera-stable
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+      - CLOUDSDK_CONTAINER_CLUSTER=centrum-stable-cluster
+substitutions:
+  _KMS_BUCKET_NAME: retail-cm-kms-storage
+  _MVN_SETTINGS_ENCRYPTED_FILE: mvn-settings.xml.encrypted
+  _MVN_SETTINGS_FILE: mvn-settings.xml
+  _KEYRING: cm-secrets-key-ring
+  _KEY: cm-key
+
+# Pushes the image to GCR
+images:
+  - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev:$BRANCH_NAME
+  - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev:latest
+  - eu.gcr.io/ingka-cm-api-dev/kommunicera-dev:$COMMIT_SHA
+  - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:$BRANCH_NAME
+  - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:latest
+  - eu.gcr.io/ingka-cm-api-dev/kommunicera-stable:$COMMIT_SHA

@@ -1,9 +1,0 @@
-# Issue related to outdated protobufjs dependency. It's a grandchild dependency
-# of @firebase/firestore and so it's nothing we can patch on our end, nor
-# something we're currently willing to submit a pull request for as it would
-# involve updating to a new major version.
-#
-# The vulnerability would require a GRPC contributor to create a malicious
-# `.proto` file and merge it into the project, which seems unlikely, so for now
-# let's accept the risk.
-CVE-2018-3738

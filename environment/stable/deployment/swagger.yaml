@@ -1,0 +1,10 @@
+swagger: "2.0"
+info:
+  description: "Retail Categorization Dev DNS"
+  title: "Retail Categorization Dev Endpoints"
+  version: "1.0.0"
+host: "rrm-stable.endpoints.ingka-cm-api-dev.cloud.goog"
+x-google-endpoints:
+  - name: "rrm-stable.endpoints.ingka-cm-api-dev.cloud.goog"
+    target: "35.198.100.89"
+paths: {}
